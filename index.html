@@ -140,6 +140,11 @@ button:hover {
 </style>
 </head>
 <body>
+<audio id="musicaFondo" loop>
+  <source src="pavomusic.mp3" type="audio/mpeg">
+</audio>
+
+
 
 <div id="container">
     <img id="pavazo" src="pavoking.png">
@@ -164,6 +169,20 @@ button:hover {
 </div>
 
 <script>
+const musicaFondo = document.getElementById("musicaFondo");
+musicaFondo.volume = 0.005;
+
+document.addEventListener("click", iniciarMusica);
+document.addEventListener("keydown", iniciarMusica);
+
+function iniciarMusica() {
+  musicaFondo.play();
+  document.removeEventListener("click", iniciarMusica);
+  document.removeEventListener("keydown", iniciarMusica);
+}
+
+
+
 // Lluvia de pavos animada
 setInterval(() => {
     const pavo = document.createElement("img");
@@ -198,6 +217,7 @@ function mezclarLista() {
 
 // Sorteo
 function iniciarSorteo() {
+    musicaFondo.pause();
     const lista = document.getElementById("participantes").value.trim().split(/\n+/);
     const resultadoDiv = document.getElementById("resultado");
 
@@ -206,20 +226,34 @@ function iniciarSorteo() {
         return;
     }
 
+    const audioClick = new Audio('ruleta.mp3');
+    audioClick.volume = 0.1;
+    audioClick.play();
+
+    let intervalo = 100;          // cada cambio = 0.1s
+    let duracion = 8000;          // 8 segundos
+    let vueltas = Math.floor(duracion / intervalo); // = 80 cambios
+
     let i = 0;
-    let vueltas = 25 + Math.floor(Math.random() * 20);
 
     const interval = setInterval(() => {
         resultadoDiv.textContent = lista[i % lista.length];
         i++;
+
         if (i > vueltas) {
             clearInterval(interval);
+
+            // 🔥 ganador completamente aleatorio entre TODOS los nombres
             const ganador = lista[Math.floor(Math.random() * lista.length)];
+
             resultadoDiv.textContent = "GANADOR: " + ganador;
             resultadoDiv.style.animation = "rgbGlow 1s infinite alternate";
         }
-    }, 100);
+    }, intervalo);
+    musicaFondo.play();
 }
+
+
 
 // Pavazo rebotando
 let pavazo = document.getElementById("pavazo");
