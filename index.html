@@ -78,7 +78,7 @@ h1 {
 }
 
 button {
-    margin-top: 15px;
+    margin-top: 5px;
     padding: 12px 25px;
     font-size: 20px;
     cursor: pointer;
@@ -137,6 +137,26 @@ button:hover {
     filter: drop-shadow(0 0 10px black);
     pointer-events: none;
 }
+#contadorParticipantes {
+    font-size: 24px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+    animation: contadorPulse 2s ease-in-out infinite;
+}
+
+/* Animación sutil de pulso */
+@keyframes contadorPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
 </style>
 </head>
 <body>
@@ -155,6 +175,10 @@ button:hover {
     </div>
 
     <textarea id="participantes" placeholder="Escribe un nombre por línea..."></textarea>
+    <div id="contadorParticipantes">
+    <span id="totalParticipantes">0</span> participantes
+</div>
+
 
     <br>
 
@@ -213,12 +237,19 @@ function mezclarLista() {
     }
 
     textarea.value = lista.join("\n");
+    actualizarContador(lista);
+}
+
+// Actualizar contador de participantes
+function actualizarContador(lista) {
+    let totalParticipantes = lista.filter(nombre => nombre.trim() !== "").length;
+    document.getElementById("totalParticipantes").textContent = totalParticipantes;
 }
 
 // Sorteo
 function iniciarSorteo() {
     musicaFondo.pause();
-    const lista = document.getElementById("participantes").value.trim().split(/\n+/);
+    let lista = document.getElementById("participantes").value.trim().split(/\n+/);
     const resultadoDiv = document.getElementById("resultado");
 
     if (lista.length === 0) {
@@ -248,9 +279,40 @@ function iniciarSorteo() {
 
             resultadoDiv.textContent = "GANADOR: " + ganador;
             resultadoDiv.style.animation = "rgbGlow 1s infinite alternate";
+
+            // Eliminar al ganador, solo la primera instancia
+            const index = lista.indexOf(ganador);  // Encuentra la primera instancia
+            if (index !== -1) {
+                lista.splice(index, 1);  // Elimina solo una instancia
+            }
+
+            document.getElementById("participantes").value = lista.join("\n");
+
+            // Actualizar el contador de participantes
+            actualizarContador(lista);
         }
     }, intervalo);
     musicaFondo.play();
+}
+
+// Iniciar la música automáticamente
+document.addEventListener("click", iniciarMusica);
+document.addEventListener("keydown", iniciarMusica);
+
+function iniciarMusica() {
+  musicaFondo.play();
+  document.removeEventListener("click", iniciarMusica);
+  document.removeEventListener("keydown", iniciarMusica);
+}
+
+// Iniciar la música automáticamente
+document.addEventListener("click", iniciarMusica);
+document.addEventListener("keydown", iniciarMusica);
+
+function iniciarMusica() {
+  musicaFondo.play();
+  document.removeEventListener("click", iniciarMusica);
+  document.removeEventListener("keydown", iniciarMusica);
 }
 
 
