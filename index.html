@@ -37,7 +37,6 @@ body {
     pointer-events: none;
     top: 100px;
     left: 100px;
-    animation: none;
     filter: drop-shadow(0 0 12px rgba(255,255,255,0.6));
     z-index: -1;
 }
@@ -60,7 +59,7 @@ h1 {
 #container {
     width: 540px;
     margin: 0 auto;
-    margin-top: 60px;
+    margin-top: 20px;
     text-align: center;
     background: rgba(0,0,0,0.4);
     padding: 25px;
@@ -82,24 +81,45 @@ button {
     padding: 12px 25px;
     font-size: 20px;
     cursor: pointer;
-    border: none;
+    border: 3px solid transparent;
     border-radius: 12px;
-    background: #ffca28;
-    transition: 0.2s;
+    background: 
+        linear-gradient(to bottom, #002988, #0171F4, #002988), /* fondo azul */
+        linear-gradient(135deg, #ffffff 0%, #b9b9b9 25%, #7a7a7a 50%, #b9b9b9 75%, #ffffff 100%); /* borde metálico */
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    transition: 0.5s;
+    color: white;
 }
+
+
 
 button:hover {
-    background: #ffb300;
-    transform: scale(1.1);
-    box-shadow: 0 0 50px #ffca28;
+    transform: scale(1.05);
+    background:
+        linear-gradient(to bottom, #0034aa, #2090ff, #0034aa),
+        linear-gradient(135deg, #ffffff 0%, #e3e3e3 20%, #aaaaaa 50%, #e3e3e3 80%, #ffffff 100%);
 }
 
+
+/* GANADOR MÁS GRANDE Y LLAMATIVO */
 #resultado {
     margin-top: 20px;
-    font-size: 36px;
-    color: yellow;
+    font-size: 30px; /* antes 36px */
+    color: #2090ff;
     font-weight: bold;
-    text-shadow: 3px 3px 8px black;
+    padding: 20px;
+    border-radius: 20px;
+    text-shadow: 4px 4px 12px black;
+    background: rgba(0,0,0,0.6);
+    border: 4px solid white;
+    animation: ganadorPulse 1s infinite alternate;
+}
+
+@keyframes ganadorPulse {
+    0% { transform: scale(1); box-shadow: 0 0 20px red; }
+    50% { transform: scale(1.1); box-shadow: 0 0 25px lime; }
+    100% { transform: scale(1); box-shadow: 0 0 20px blue; }
 }
 
 .pavo {
@@ -117,13 +137,6 @@ button:hover {
     100% { transform: translateY(110vh) rotate(360deg); }
 }
 
-@keyframes rgbGlow { 
-    0% { color: red; } 
-    33% { color: lime; } 
-    66% { color: blue; } 
-    100% { color: magenta; }
-}
-
 #header {
     width: 100%;
     text-align: center;
@@ -137,6 +150,7 @@ button:hover {
     filter: drop-shadow(0 0 10px black);
     pointer-events: none;
 }
+
 #contadorParticipantes {
     font-size: 24px;
     color: white;
@@ -144,27 +158,71 @@ button:hover {
     text-align: center;
     margin-top: 10px;
     background-color: rgba(0, 0, 0, 0.6);
-
     border-radius: 12px;
     box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
-    animation: contadorPulse 2s ease-in-out infinite;
 }
 
-/* Animación sutil de pulso */
-@keyframes contadorPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+/* /// NUEVO - CAJA DE GANADORES */
+#listaGanadores {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 260px;
+    background: rgba(0,0,0,0.55);
+    padding: 15px;
+    border-radius: 15px;
+    color: white;
+    font-size: 20px;
+    box-shadow: 0 0 20px black;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+#listaGanadores h2 {
+    font-size: 26px;
+    margin: 0 0 10px 0;
+    text-align: center;
+    color: white;
+    text-shadow: 0 0 10px black;
+}
+#listaGanadores ul {
+    padding-left: 20px;
+}
+#listaGanadores li {
+    margin-bottom: 5px;
+}
+
+/* <<< NUEVO — ganador destacado >>> */
+.ganadorDestacado {
+    color: #ffffff;
+    font-weight: bold;
+    text-shadow: 0 0 10px #ffdd55, 0 0 20px #ffaa00;
+    animation: glowWinner 1.5s infinite alternate;
+}
+
+@keyframes glowWinner {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.05); opacity: 1; }
+}
+.tituloGanador {
+    color: #ffffff;      /* amarillo brillante */
+    font-weight: bold;
+    text-shadow: 0 0 10px black, 0 0 20px #2303b4;
 }
 
 </style>
 </head>
+
 <body>
+
+<!-- /// NUEVO: cuadro de ganadores -->
+<div id="listaGanadores">
+    <h2>Ganadores</h2>
+    <ul id="ganadoresList"></ul>
+</div>
+
 <audio id="musicaFondo" loop>
   <source src="pavomusic.mp3" type="audio/mpeg">
 </audio>
-
-
 
 <div id="container">
     <img id="pavazo" src="pavoking.png">
@@ -175,18 +233,15 @@ button:hover {
     </div>
 
     <textarea id="participantes" placeholder="Escribe un nombre por línea..."></textarea>
+
     <div id="contadorParticipantes">
-    <span id="totalParticipantes">0</span> participantes
-</div>
-
+        <span id="totalParticipantes">0</span> participantes
+    </div>
 
     <br>
 
-    <!-- BOTÓN NUEVO DE MEZCLAR -->
     <button onclick="mezclarLista()">🔄 Mezclar lista</button>
-
     <br>
-
     <button onclick="iniciarSorteo()">🎉 ¡SORTEAR!</button>
 
     <div id="resultado"></div>
@@ -196,8 +251,21 @@ button:hover {
 const musicaFondo = document.getElementById("musicaFondo");
 musicaFondo.volume = 0.005;
 
-document.addEventListener("click", iniciarMusica);
-document.addEventListener("keydown", iniciarMusica);
+// Contador de ganadores
+let ganadores = [];
+
+function agregarGanador(nombre) {
+    ganadores.push(nombre);
+    const lista = document.getElementById("ganadoresList");
+
+    lista.innerHTML = ganadores
+        .map((g, i) => {
+            let clase = (i === ganadores.length - 1) ? "ganadorDestacado" : "";
+            return `<li class="${clase}">${i+1}. ${g}</li>`;
+        })
+        .join("");
+}
+
 
 function iniciarMusica() {
   musicaFondo.play();
@@ -205,9 +273,10 @@ function iniciarMusica() {
   document.removeEventListener("keydown", iniciarMusica);
 }
 
+document.addEventListener("click", iniciarMusica);
+document.addEventListener("keydown", iniciarMusica);
 
-
-// Lluvia de pavos animada
+// Lluvia de pavos
 setInterval(() => {
     const pavo = document.createElement("img");
     pavo.src = "pavo.gif";
@@ -223,14 +292,13 @@ setInterval(() => {
     setTimeout(() => pavo.remove(), dur * 1000);
 }, 300);
 
-// 🆕 FUNCION MEZCLAR
+// Mezclar lista
 function mezclarLista() {
     let textarea = document.getElementById("participantes");
     let lista = textarea.value.trim().split(/\n+/);
 
     if (lista.length < 2) return;
 
-    // Fisher-Yates Shuffle
     for (let i = lista.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
         [lista[i], lista[j]] = [lista[j], lista[i]];
@@ -240,15 +308,15 @@ function mezclarLista() {
     actualizarContador(lista);
 }
 
-// Actualizar contador de participantes
 function actualizarContador(lista) {
-    let totalParticipantes = lista.filter(nombre => nombre.trim() !== "").length;
+    let totalParticipantes = lista.filter(n => n.trim() !== "").length;
     document.getElementById("totalParticipantes").textContent = totalParticipantes;
 }
 
 // Sorteo
 function iniciarSorteo() {
     musicaFondo.pause();
+
     let lista = document.getElementById("participantes").value.trim().split(/\n+/);
     const resultadoDiv = document.getElementById("resultado");
 
@@ -261,10 +329,9 @@ function iniciarSorteo() {
     audioClick.volume = 0.1;
     audioClick.play();
 
-    let intervalo = 100;          // cada cambio = 0.1s
-    let duracion = 8000;          // 8 segundos
-    let vueltas = Math.floor(duracion / intervalo); // = 80 cambios
-
+    let intervalo = 100;
+    let duracion = 8000;
+    let vueltas = duracion / intervalo;
     let i = 0;
 
     const interval = setInterval(() => {
@@ -274,50 +341,25 @@ function iniciarSorteo() {
         if (i > vueltas) {
             clearInterval(interval);
 
-            // 🔥 ganador completamente aleatorio entre TODOS los nombres
             const ganador = lista[Math.floor(Math.random() * lista.length)];
 
-            resultadoDiv.textContent = "GANADOR: " + ganador;
-            resultadoDiv.style.animation = "rgbGlow 1s infinite alternate";
+            resultadoDiv.innerHTML = `<span class="tituloGanador">GANADOR:</span> ${ganador}`;
 
-            // Eliminar al ganador, solo la primera instancia
-            const index = lista.indexOf(ganador);  // Encuentra la primera instancia
-            if (index !== -1) {
-                lista.splice(index, 1);  // Elimina solo una instancia
-            }
+
+            agregarGanador(ganador); // <-- AÑADIR A LA LISTA DE GANADORES
+
+            const index = lista.indexOf(ganador);
+            if (index !== -1) lista.splice(index, 1);
 
             document.getElementById("participantes").value = lista.join("\n");
-
-            // Actualizar el contador de participantes
             actualizarContador(lista);
         }
     }, intervalo);
+
     musicaFondo.play();
 }
 
-// Iniciar la música automáticamente
-document.addEventListener("click", iniciarMusica);
-document.addEventListener("keydown", iniciarMusica);
-
-function iniciarMusica() {
-  musicaFondo.play();
-  document.removeEventListener("click", iniciarMusica);
-  document.removeEventListener("keydown", iniciarMusica);
-}
-
-// Iniciar la música automáticamente
-document.addEventListener("click", iniciarMusica);
-document.addEventListener("keydown", iniciarMusica);
-
-function iniciarMusica() {
-  musicaFondo.play();
-  document.removeEventListener("click", iniciarMusica);
-  document.removeEventListener("keydown", iniciarMusica);
-}
-
-
-
-// Pavazo rebotando
+// PAVAZO REBOTANDO
 let pavazo = document.getElementById("pavazo");
 let x = 120, y = 120, velX = 2, velY = 2;
 
@@ -328,20 +370,13 @@ function animarPavazo() {
     x += velX;
     y += velY;
 
-    if (x <= 0 || x >= ancho) { velX *= -1; efectoRebote(); }
-    if (y <= 0 || y >= alto) { velY *= -1; efectoRebote(); }
+    if (x <= 0 || x >= ancho) velX *= -1;
+    if (y <= 0 || y >= alto) velY *= -1;
 
     pavazo.style.left = x + "px";
     pavazo.style.top = y + "px";
 
     requestAnimationFrame(animarPavazo);
-}
-
-function efectoRebote() {
-    pavazo.style.filter = "drop-shadow(0 0 18px white)";
-    setTimeout(() => {
-        pavazo.style.filter = "drop-shadow(0 0 12px rgba(255,255,255,0.6))";
-    }, 120);
 }
 
 animarPavazo();
