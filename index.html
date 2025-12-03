@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Sorteo Glogloking</title>
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(
+        120deg,
+        #ff004c,
+        #4500ff,
+        #00eaff,
+        #00ff37,
+        #ffea00,
+        #ff004c
+    );
+    background-size: 1800% 1800%;
+    animation: fondoRGB 18s ease-in-out infinite;
+}
+
+@keyframes fondoRGB {
+    0%   { background-position: 0% 50%; }
+    20%  { background-position: 50% 80%; }
+    40%  { background-position: 100% 50%; }
+    60%  { background-position: 50% 20%; }
+    80%  { background-position: 0% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+#pavazo {
+    position: fixed;
+    width: 420px;
+    pointer-events: none;
+    top: 100px;
+    left: 100px;
+    animation: none;
+    filter: drop-shadow(0 0 12px rgba(255,255,255,0.6));
+    z-index: -1;
+}
+
+h1 {
+    text-align: center;
+    font-size: 64px;
+    color: white;
+    margin-top: -10px;
+    text-shadow: 4px 4px 10px black;
+    animation: titlePulse 2s infinite;
+}
+
+@keyframes titlePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.07); }
+    100% { transform: scale(1); }
+}
+
+#container {
+    width: 540px;
+    margin: 0 auto;
+    margin-top: 60px;
+    text-align: center;
+    background: rgba(0,0,0,0.4);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px black;
+}
+
+#participantes {
+    width: 90%;
+    height: 140px;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 16px;
+    text-align: center;
+}
+
+button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    font-size: 20px;
+    cursor: pointer;
+    border: none;
+    border-radius: 12px;
+    background: #ffca28;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #ffb300;
+    transform: scale(1.1);
+    box-shadow: 0 0 50px #ffca28;
+}
+
+#resultado {
+    margin-top: 20px;
+    font-size: 36px;
+    color: yellow;
+    font-weight: bold;
+    text-shadow: 3px 3px 8px black;
+}
+
+.pavo {
+    position: fixed;
+    top: -120px;
+    width: 80px;
+    user-select: none;
+    pointer-events: none;
+    animation: caer 4s linear infinite;
+    z-index: -1;
+}
+
+@keyframes caer {
+    0% { transform: translateY(-150px) rotate(0deg); }
+    100% { transform: translateY(110vh) rotate(360deg); }
+}
+
+@keyframes rgbGlow { 
+    0% { color: red; } 
+    33% { color: lime; } 
+    66% { color: blue; } 
+    100% { color: magenta; }
+}
+
+#header {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;  
+}
+
+.venom {
+    width: 520px;
+    display: block;
+    margin: 0 auto;
+    filter: drop-shadow(0 0 10px black);
+    pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<div id="container">
+    <img id="pavazo" src="pavoking.png">
+
+    <div id="header">
+        <img src="glogloking.png" style="width: 320px; position:relative; top: 40px;">
+        <img src="pavazo.png" class="venom">
+    </div>
+
+    <textarea id="participantes" placeholder="Escribe un nombre por línea..."></textarea>
+
+    <br>
+
+    <!-- BOTÓN NUEVO DE MEZCLAR -->
+    <button onclick="mezclarLista()">🔄 Mezclar lista</button>
+
+    <br>
+
+    <button onclick="iniciarSorteo()">🎉 ¡SORTEAR!</button>
+
+    <div id="resultado"></div>
+</div>
+
+<script>
+// Lluvia de pavos animada
+setInterval(() => {
+    const pavo = document.createElement("img");
+    pavo.src = "pavo.gif";
+    pavo.classList.add("pavo");
+
+    let x = Math.random() * window.innerWidth;
+    let dur = 3 + Math.random() * 3;
+
+    pavo.style.left = x + "px";
+    pavo.style.animationDuration = dur + "s";
+    document.body.appendChild(pavo);
+
+    setTimeout(() => pavo.remove(), dur * 1000);
+}, 300);
+
+// 🆕 FUNCION MEZCLAR
+function mezclarLista() {
+    let textarea = document.getElementById("participantes");
+    let lista = textarea.value.trim().split(/\n+/);
+
+    if (lista.length < 2) return;
+
+    // Fisher-Yates Shuffle
+    for (let i = lista.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [lista[i], lista[j]] = [lista[j], lista[i]];
+    }
+
+    textarea.value = lista.join("\n");
+}
+
+// Sorteo
+function iniciarSorteo() {
+    const lista = document.getElementById("participantes").value.trim().split(/\n+/);
+    const resultadoDiv = document.getElementById("resultado");
+
+    if (lista.length === 0) {
+        resultadoDiv.textContent = "No hay participantes";
+        return;
+    }
+
+    let i = 0;
+    let vueltas = 25 + Math.floor(Math.random() * 20);
+
+    const interval = setInterval(() => {
+        resultadoDiv.textContent = lista[i % lista.length];
+        i++;
+        if (i > vueltas) {
+            clearInterval(interval);
+            const ganador = lista[Math.floor(Math.random() * lista.length)];
+            resultadoDiv.textContent = "GANADOR: " + ganador;
+            resultadoDiv.style.animation = "rgbGlow 1s infinite alternate";
+        }
+    }, 100);
+}
+
+// Pavazo rebotando
+let pavazo = document.getElementById("pavazo");
+let x = 120, y = 120, velX = 2, velY = 2;
+
+function animarPavazo() {
+    const ancho = window.innerWidth - pavazo.clientWidth;
+    const alto = window.innerHeight - pavazo.clientHeight;
+
+    x += velX;
+    y += velY;
+
+    if (x <= 0 || x >= ancho) { velX *= -1; efectoRebote(); }
+    if (y <= 0 || y >= alto) { velY *= -1; efectoRebote(); }
+
+    pavazo.style.left = x + "px";
+    pavazo.style.top = y + "px";
+
+    requestAnimationFrame(animarPavazo);
+}
+
+function efectoRebote() {
+    pavazo.style.filter = "drop-shadow(0 0 18px white)";
+    setTimeout(() => {
+        pavazo.style.filter = "drop-shadow(0 0 12px rgba(255,255,255,0.6))";
+    }, 120);
+}
+
+animarPavazo();
+</script>
+
+</body>
+</html>
