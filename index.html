@@ -209,6 +209,44 @@ button:hover {
     text-shadow: 0 0 10px black, 0 0 20px #2303b4;
 }
 
+/* PANEL DE SONIDOS (NO CAMBIA NADA DEL DISEÑO EXISTENTE) */
+#panelSonidos {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 260px;
+    background: rgba(0,0,0,0.55);
+    padding: 15px;
+    border-radius: 15px;
+    color: white;
+    font-size: 18px;
+    box-shadow: 0 0 20px black;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+#panelSonidos h2 {
+    text-align: center;
+    margin: 0 0 10px 0;
+}
+
+.sonidoBox {
+    background: rgba(255,255,255,0.1);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+.sonidoBox button {
+    padding: 6px 12px;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 8px;
+    background: #0171F4;
+    color: white;
+    border: none;
+}
+
+
 </style>
 </head>
 
@@ -246,8 +284,54 @@ button:hover {
 
     <div id="resultado"></div>
 </div>
+<!-- PANEL DE SONIDOS -->
+<div id="panelSonidos">
+    <h2>🎵 Musica</h2>
+
+    <div class="sonidoBox">
+        <div>📢 Pavito</div>
+        <button onclick="toggleSound('s1')">Play/Pause</button><br>
+        <input type="range" min="0" max="1" step="0.01" onchange="setVol('s1', this.value)">
+    </div>
+
+    <!--<div class="sonidoBox">
+        <div>🔥 Victoria</div>
+        <button onclick="toggleSound('s2')">Play/Pause</button><br>
+        <input type="range" min="0" max="1" step="0.01" onchange="setVol('s2', this.value)">
+    </div>
+
+    <div class="sonidoBox">
+       <iframe id="playerYT" width="350" height="200" frameborder="0" allowfullscreen></iframe>
+
+    </div> -->
+</div>
+
+<!-- AUDIOS -->
+<audio id="s1" src="pavomusic.mp3"></audio>
+<audio id="s2" src="victoria.mp3"></audio>
+<audio id="s3" src="boom.mp3"></audio>
+
 
 <script>
+
+    // VOLUMENES INICIALES
+window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("s1").volume = 0.01; // pavito
+    document.getElementById("s2").volume = 0.06; // Victoria
+    document.getElementById("s3").volume = 0.04; // Explosión
+});
+
+    /* CONTROL DE SONIDOS */
+function toggleSound(id) {
+    let s = document.getElementById(id);
+    if (s.paused) s.play();
+    else s.pause();
+}
+
+function setVol(id, v) {
+    document.getElementById(id).volume = v;
+}
+
 const musicaFondo = document.getElementById("musicaFondo");
 musicaFondo.volume = 0.005;
 
@@ -267,14 +351,6 @@ function agregarGanador(nombre) {
 }
 
 
-function iniciarMusica() {
-  musicaFondo.play();
-  document.removeEventListener("click", iniciarMusica);
-  document.removeEventListener("keydown", iniciarMusica);
-}
-
-document.addEventListener("click", iniciarMusica);
-document.addEventListener("keydown", iniciarMusica);
 
 // Lluvia de pavos
 setInterval(() => {
